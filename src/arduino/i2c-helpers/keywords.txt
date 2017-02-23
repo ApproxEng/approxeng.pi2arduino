@@ -1,0 +1,10 @@
+I2CResponder    KEYWORD1
+I2CReader       KEYWORD1
+start           KEYWORD2
+addFloat        KEYWORD2
+addByte         KEYWORD2
+getFloat        KEYWORD2
+getBytes        KEYWORD2
+checksumValid   KEYWORD2
+hasNewData      KEYWORD2
+printBuffer     KEYWORD2
