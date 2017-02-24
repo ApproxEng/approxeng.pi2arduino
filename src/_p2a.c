@@ -37,7 +37,7 @@ static PyObject *p2a_sendBytes(PyObject *self, PyObject *args) {
 
 static PyObject *p2a_getBytes(PyObject *self, PyObject *args) {
     int address, length;
-    PyObject *result
+    PyObject *result;
     if (!PyArg_ParseTuple(args, "ii", &address, &length))
         return NULL;
     char *receiveBuffer;
