@@ -1,6 +1,3 @@
-// Example, uses a bunch of other uneccessary stuff as well
-// so probably not the best guide.
-
 #include <FastLED.h>
 #include <Wire.h>
 #include "I2CHelper.h"
@@ -46,7 +43,7 @@ void loop() {
   if (reader.hasNewData()) {
     //byte command = reader.getByte();
     a = reader.getFloat();
-    b = reader.getFloat();
+    //b = reader.getFloat();
     Serial.print(F("Message received: a="));
     Serial.print(a);
     Serial.print(F(", b="));
