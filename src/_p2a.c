@@ -26,11 +26,9 @@ PyMODINIT_FUNC init_p2a(void) {
 
 static PyObject *p2a_sendBytes(PyObject *self, PyObject *args) {
     int address, length;
-    PyObject *byteArrayObject;
     char *buffer;
-    if (!PyArg_ParseTuple(args, "ioi", &address, &byteArrayObject, &length))
+    if (!PyArg_ParseTuple(args, "it", &address, &buffer, &length))
         return NULL;
-    buffer = PyByteArray_AsString(byteArrayObject);
     sendBytes(address, buffer, length);
     return Py_BuildValue("i",0);
 }
