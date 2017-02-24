@@ -28,7 +28,7 @@ static PyObject *p2a_sendBytes(PyObject *self, PyObject *args) {
     int address, length;
     PyObject *byteArrayObject;
     char *buffer;
-    if (!PyArg_ParseTuple(args, "io!i", &address, PyByteArray_Type, &byteArrayObject, &length))
+    if (!PyArg_ParseTuple(args, "ioi", &address, &byteArrayObject, &length))
         return NULL;
     buffer = PyByteArray_AsString(byteArrayObject);
     sendBytes(address, buffer, length);
