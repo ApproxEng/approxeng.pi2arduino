@@ -35,8 +35,8 @@ void setup() {
   }
   Serial.print(F("Waiting for I2C communication. Address is 0x"));
   Serial.println(ADDRESS, HEX);
-  a = 1.23f;
-  b = 5.67f;
+  a = 1.0f;
+  b = 1.0f;
 }
 
 void loop() {
@@ -69,9 +69,9 @@ void updateLEDs() {
 
 void requestEvent() {
   //Serial.println(F("Request event triggered"));
-  float c = a * b;
+  a+=1.0f;
   responder.start();
-  responder.addFloat(c);
+  responder.addFloat(a);
   int bytesSent = responder.write(false);
 }
 

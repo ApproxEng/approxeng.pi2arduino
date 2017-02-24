@@ -11,10 +11,10 @@
 #include <Wire.h>
 #include "I2CHelper.h"
 
-union floatUnion {
+volatile union floatUnion {
   float f;
   byte fBuff[sizeof(float)];
-};
+} fu;
 
 I2CResponder::I2CResponder(byte* b, int bs) {
   buffer = b;
@@ -40,7 +40,6 @@ void I2CResponder::addByte(byte b) {
 }
 
 void I2CResponder::addFloat(float f) {
-  floatUnion fu;
   fu.f = f;
   for (int i = 0; i < sizeof(float); i++) {
     addByte(fu.fBuff[i]);
@@ -79,7 +78,6 @@ byte I2CReader::getByte() {
 }
 
 float I2CReader::getFloat() {
-  floatUnion fu;
   for (int i = 0; i < sizeof(float); i++) {
     fu.fBuff[i] = getByte();
   }
