@@ -6842,7 +6842,7 @@ static uint32_t *initMapMem(int fd, uint32_t addr, uint32_t len) {
 static int initCheckPermitted(void) {
     DBG(DBG_STARTUP, "");
 
-    if ((fdMem = open("/dev/mem", O_RDWR | O_SYNC)) < 0) {
+    if ((fdMem = open("/dev/gpiomem", O_RDWR | O_SYNC)) < 0) {
         DBG(DBG_ALWAYS,
             "\n" \
          "+---------------------------------------------------------+\n" \
