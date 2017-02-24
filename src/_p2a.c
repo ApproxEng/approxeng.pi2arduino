@@ -26,19 +26,24 @@ PyMODINIT_FUNC init_p2a(void) {
 
 static PyObject *p2a_sendBytes(PyObject *self, PyObject *args) {
     int address, length;
+    PyObject *byteArrayObject;
     char *buffer;
-    if (!PyArg_ParseTuple(args, "isi", &address, &buffer, &length))
+    if (!PyArg_ParseTuple(args, "io!i", &address, PyByteArray_Type, &byteArrayObject, &length))
         return NULL;
+    buffer = PyByteArray_AsString(byteArrayObject);
     sendBytes(address, buffer, length);
     return Py_BuildValue("i",0);
 }
 
-static char receiveBuffer[32];
-
 static PyObject *p2a_getBytes(PyObject *self, PyObject *args) {
     int address, length;
+    PyObject *result
     if (!PyArg_ParseTuple(args, "ii", &address, &length))
         return NULL;
+    char *receiveBuffer;
+    receiveBuffer = (char *)malloc(length);
     getBytes(address, receiveBuffer, length);
-    return Py_BuildValue("s#", receiveBuffer, length);
+    result = Py_BuildValue("s#", receiveBuffer, length);
+    free(receiveBuffer);
+    return result;
 }
