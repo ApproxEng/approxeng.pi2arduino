@@ -18,15 +18,15 @@ I2CReader reader = I2CReader(receiveBuffer, BUFFER_SIZE);
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
 #endif
 
-#define NUM_LEDS 16
-const long interval = 20;
+#define NUM_LEDS 64
+const long interval = 10;
 unsigned long previousMillis = 0;
 CRGB leds[NUM_LEDS];
 volatile boolean hasData = false;
 
 void setup() {
   FastLED.addLeds<NEOPIXEL, 6>(leds, NUM_LEDS);
-  FastLED.setBrightness(60);
+  FastLED.setBrightness(30);
   Wire.onRequest(requestEvent);
   Wire.onReceive(receiveEvent);
   Wire.begin(ADDRESS);
@@ -61,9 +61,14 @@ void loop() {
 
 void updateLEDs() {
   for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i].fadeToBlackBy(15);
+    leds[i].fadeToBlackBy(5);
   }
-  leds[random(16)] = CHSV(60 + random(-30, 30), 255, 255);
+  CRGB firstLED = leds[0];
+  for (int i = 0; i < NUM_LEDS-1; i++) {
+    leds[i] = leds[i+1];
+  }
+  leds[NUM_LEDS-1] = firstLED;
+  leds[random(NUM_LEDS)] = CHSV(60 + random(-60, 60), 255, 255);
   FastLED.show();
 }
 
