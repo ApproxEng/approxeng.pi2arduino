@@ -1,2 +1,4 @@
 src/approxeng/pi2arduino/*.so
 build/
+.idea/
+venv/
