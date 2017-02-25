@@ -1,4 +1,4 @@
-from distutils.core import setup, Extension
+from setuptools import setup, Extension, find_packages
 
 extension_mod = Extension("approxeng.pi2arduino._p2a",
                           sources=["linux/_p2a.c",
@@ -16,6 +16,5 @@ setup(name="approxeng.pi2arduino",
       author='Tom Oinn',
       author_email='tomoinn@gmail.com',
       license='ASL2.0',
-      packages=['approxeng.pi2arduino'],
-      zip_safe=False,
+      packages=find_packages(),
       ext_modules=[extension_mod])
