@@ -10,9 +10,9 @@ def send(address, *args):
             if arg < 0 | arg > 255:
                 raise ValueError('Integer values must be between 0 and 255!')
             else:
-                bytes.append(arg)
+                bytes.append(chr(arg))
         elif isinstance(arg, float):
-            for c in struct.pack('F', arg):
+            for c in struct.pack('f', arg):
                 bytes.append(c)
     print ''.join(bytes)
     approxeng.pi2arduino._p2a.sendBytes(address, ''.join(bytes))
