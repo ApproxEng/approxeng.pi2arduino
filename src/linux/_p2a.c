@@ -8,13 +8,18 @@ static char sendBytes_docstring[] = "Send some bytes over I2C from the Pi";
 
 static char getBytes_docstring[] = "Get some bytes over I2C from the Arduino";
 
+static char init_docstring[] = "Call gpioInitialise on the underlying library";
+
 static PyObject *p2a_sendBytes(PyObject *self, PyObject *args);
 
 static PyObject *p2a_getBytes(PyObject *self, PyObject *args);
 
+static PyObject *p2a_init(PyObject *self, PyObject *args);
+
 static PyMethodDef module_methods[] = {
     {"sendBytes", p2a_sendBytes, METH_VARARGS, sendBytes_docstring},
     {"getBytes", p2a_getBytes, METH_VARARGS, getBytes_docstring},
+    {"init", p2a_init, METH_VARARGS, init_docstring},
     {NULL, NULL, 0, NULL}
 };
 
@@ -44,4 +49,8 @@ static PyObject *p2a_getBytes(PyObject *self, PyObject *args) {
     result = Py_BuildValue("s#", receiveBuffer, length);
     free(receiveBuffer);
     return result;
+}
+
+static PyObject *p2a_init(PyObject *self, PyObject *args) {
+    gpioInitialise();
 }
