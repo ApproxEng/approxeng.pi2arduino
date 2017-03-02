@@ -1,15 +1,65 @@
 /*
- * I2CHelper.cpp - Library for handling unreliable I2C communication 
- * with a Raspbery Pi. 
- * 
- * Created by Tom Oinn, February 20, 2017
- * 
- * Released under the ASL2
- */
+   I2CHelper.cpp - Library for handling unreliable I2C communication
+   with a Raspbery Pi.
+
+   Created by Tom Oinn, February 20, 2017
+
+   Released under the ASL2
+*/
 
 #include <Arduino.h>
 #include <Wire.h>
 #include "I2CHelper.h"
+
+byte _receiveBuffer[RECEIVE_BUFFER_SIZE];
+I2CReader I2CHelper::reader(_receiveBuffer, RECEIVE_BUFFER_SIZE);
+byte _transmitBuffer[TRANSMIT_BUFFER_SIZE];
+I2CResponder I2CHelper::responder(_transmitBuffer, TRANSMIT_BUFFER_SIZE);
+
+void _i2cReceiveCallback(int bytesRead) {
+  switch (bytesRead) {
+    case 0:
+      // Bus probe
+      break;
+    case 1:
+      // Data from Pi, use it!
+      I2CHelper::reader.receiveByte();
+      break;
+    default:
+      // Some other amount of data, ignore it
+      break;
+  }
+}
+
+void _i2cRequestCallback() {
+  if (I2CHelper::user_onRequest) {
+    I2CHelper::responder.start();
+    I2CHelper::user_onRequest();
+  }  
+}
+
+void I2CHelper::begin(byte address) {
+  Wire.onReceive(_i2cReceiveCallback);
+  Wire.onRequest(_i2cRequestCallback);
+  Wire.begin(address);
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) || defined(__AVR_ATmega328P__)
+  // deactivate internal pull-ups for twi
+  // as per note from atmega8 manual pg167
+  cbi(PORTC, 4);
+  cbi(PORTC, 5);
+#else
+  // deactivate internal pull-ups for twi
+  // as per note from atmega128 manual pg204
+  cbi(PORTD, 0);
+  cbi(PORTD, 1);
+#endif
+}
+
+void I2CHelper::onRequest(void (*function)(void) ) {
+  I2CHelper::user_onRequest = function;
+}
+
+void (*I2CHelper::user_onRequest)(void);
 
 volatile union floatUnion {
   float f;

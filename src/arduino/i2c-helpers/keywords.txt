@@ -1,3 +1,4 @@
+I2CHelper	KEYWORD1
 I2CResponder    KEYWORD1
 I2CReader       KEYWORD1
 start           KEYWORD2

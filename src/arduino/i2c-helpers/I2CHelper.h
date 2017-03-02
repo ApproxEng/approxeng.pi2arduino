@@ -1,20 +1,30 @@
 /*
- * I2CHelper.h - Library for handling unreliable I2C communication with a
- * Raspbery Pi. 
- * 
- * Created by Tom Oinn, February 20, 2017
- * 
- * Released under the ASL2
- */
+   I2CHelper.h - Library for handling unreliable I2C communication with a
+   Raspbery Pi.
+
+   Created by Tom Oinn, February 20, 2017
+
+   Released under the ASL2
+*/
 
 #ifndef I2CHelper_h
 #define I2CHelper_h
 
 #include "Arduino.h"
 
+#ifndef cbi
+#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
+#endif
+
 // Delay in milliseconds beyond which we assume we have a new
 // packet of data.
 #define TRANSMIT_DELAY 10
+
+// Size of the receive buffer
+#define RECEIVE_BUFFER_SIZE 32
+// Size of the transmit buffer
+#define TRANSMIT_BUFFER_SIZE 32
+
 
 // Used to respond to I2C requests
 class I2CResponder {
@@ -53,6 +63,15 @@ class I2CReader {
     volatile int bytesRead;
     volatile long lastReceptionTime;
     volatile boolean newData;
+};
+
+class I2CHelper {
+  public:
+    static void begin(byte address);
+    static I2CReader reader;
+    static I2CResponder responder;
+    static void onRequest(void(*)(void));
+    static void (*user_onRequest)(void);    
 };
 
 #endif

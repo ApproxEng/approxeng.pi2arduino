@@ -1,35 +1,20 @@
 #include <FastLED.h>
-#include <Wire.h>
 #include "I2CHelper.h"
 
-#define ADDRESS 0x70
-#define BUFFER_SIZE 30
-
-byte receiveBuffer[BUFFER_SIZE];
-byte sendBuffer[BUFFER_SIZE];
+#define ADDRESS 0x61
 
 volatile float a, b;
-
-
-I2CResponder responder = I2CResponder(sendBuffer, BUFFER_SIZE);
-I2CReader reader = I2CReader(receiveBuffer, BUFFER_SIZE);
-
-#ifndef cbi
-#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
-#endif
 
 #define NUM_LEDS 64
 const long interval = 10;
 unsigned long previousMillis = 0;
 CRGB leds[NUM_LEDS];
-volatile boolean hasData = false;
 
 void setup() {
-  FastLED.addLeds<NEOPIXEL, 6>(leds, NUM_LEDS);
-  FastLED.setBrightness(30);
-  Wire.onRequest(requestEvent);
-  Wire.onReceive(receiveEvent);
-  Wire.begin(ADDRESS);
+  FastLED.addLeds<NEOPIXEL, 10>(leds, NUM_LEDS);
+  FastLED.setBrightness(80);
+  I2CHelper::onRequest(requestEvent);
+  I2CHelper::begin(ADDRESS);
   Serial.begin(115200);
   while (!Serial) {
   }
@@ -40,9 +25,9 @@ void setup() {
 }
 
 void loop() {
-  if (reader.hasNewData()) {
+  if (I2CHelper::reader.hasNewData()) {
     //byte command = reader.getByte();
-    a = reader.getFloat();
+    a = I2CHelper::reader.getFloat();
     //b = reader.getFloat();
     Serial.print(F("Message received: a="));
     Serial.print(a);
@@ -75,16 +60,7 @@ void updateLEDs() {
 void requestEvent() {
   //Serial.println(F("Request event triggered"));
   a+=1.0f;
-  responder.start();
-  responder.addFloat(a);
-  int bytesSent = responder.write(false);
-}
-
-void receiveEvent(int dataSize) {
-  if (dataSize == 0) {
-    //Serial.println(F("Received SMBus probe"));
-  } else {
-    reader.receiveByte();
-  }
+  I2CHelper::responder.addFloat(a);
+  int bytesSent = I2CHelper::responder.write(false);
 }
 
