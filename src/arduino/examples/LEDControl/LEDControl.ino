@@ -55,11 +55,11 @@ void setup() {
    Update the LEDs if the interval between updates has expired.
 */
 void loop() {
+  I2CHelper::printReceiveStatus();
   if (I2CHelper::reader.hasNewData()) {
     if (I2CHelper::reader.checksumValid()) {
-      Serial.println("New data!");
       byte command = I2CHelper::reader.getByte();
-      Serial.print("Command received: ");
+      Serial.print(F("Command received: "));
       Serial.println(command, DEC);
       switch (command) {
         case 1:
@@ -73,10 +73,12 @@ void loop() {
       }
     }
     else {
+      I2CHelper::reader.printBuffer();
+      Serial.println(F("Checksum error, restarting reads"));
       I2CHelper::reader.start();
     }
   }
-  I2CHelper::reader.printBuffer();
+  //I2CHelper::reader.printBuffer();
   if (ledUpdate.shouldRun()) {
     for (int i = 0; i < NUM_LEDS; i++) {
       leds[i].fadeToBlackBy(5);

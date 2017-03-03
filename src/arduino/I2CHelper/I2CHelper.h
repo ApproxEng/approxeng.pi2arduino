@@ -25,7 +25,6 @@
 // Size of the transmit buffer
 #define TRANSMIT_BUFFER_SIZE 32
 
-
 // Used to respond to I2C requests
 class I2CResponder {
   public:
@@ -72,6 +71,7 @@ class I2CHelper {
     static I2CResponder responder;
     static void onRequest(void(*)(void));
     static void (*user_onRequest)(void);
+    static void printReceiveStatus();
 };
 
 #endif

@@ -34,9 +34,11 @@ void sendBytes(unsigned address, char *buffer, unsigned length) {
  */
 void sendByteWithRetry(unsigned handle, unsigned byte) {
     int status = -1;
-    while (status < 0) {
+    int retriesRemaining = 4;
+    while (status < 0 && retriesRemaining > 0) {
         status = i2cWriteByte(handle, byte);
         if (status < 0) {
+            retriesRemaining--;
             switch (status) {
                 case PI_I2C_WRITE_FAILED:
                     fprintf(stderr, "I2C write failed!\n");

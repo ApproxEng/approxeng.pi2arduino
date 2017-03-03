@@ -16,18 +16,38 @@ I2CReader I2CHelper::reader(_receiveBuffer, RECEIVE_BUFFER_SIZE);
 byte _transmitBuffer[TRANSMIT_BUFFER_SIZE];
 I2CResponder I2CHelper::responder(_transmitBuffer, TRANSMIT_BUFFER_SIZE);
 
+
+
+volatile int _bytesReceived = 0;
+volatile boolean _messageHandled = false;
+volatile boolean _bytesProcessing = false;
+
 void _i2cReceiveCallback(int bytesRead) {
+  _bytesProcessing = true;
+  _messageHandled = true;
+  _bytesReceived += bytesRead;
   switch (bytesRead) {
     case 0:
       // Bus probe
       break;
-    case 1:
-      // Data from Pi, use it!
-      I2CHelper::reader.receiveByte();
-      break;
     default:
-      // Some other amount of data, ignore it
+      // Data from Pi, use it!
+      while (Wire.available()) {
+        I2CHelper::reader.receiveByte();
+      }
       break;
+  }
+  _bytesProcessing = false;
+}
+
+void I2CHelper::printReceiveStatus() {
+  if (_messageHandled) {
+    _messageHandled = false;
+    Serial.print(_bytesReceived, DEC);
+    Serial.println(F(" bytes received"));
+  }
+  if (_bytesProcessing) {
+    Serial.println("Currently processing interrupt...");
   }
 }
 
@@ -143,32 +163,36 @@ void I2CReader::receiveByte() {
   long now = millis();
   if (now - lastReceptionTime < TRANSMIT_DELAY) {
     // Close in time to the previous data, append to buffer
-    if (bytesRead < expectedDataSize) {
-      byte data = Wire.read();
-      buffer[bytesRead++] = data;
+    if (bytesRead < expectedDataSize && Wire.available()) {
+      buffer[bytesRead++] = Wire.read();
       if (bytesRead == expectedDataSize) {
         newData = true;
+        readPosition = 0;
+        while (Wire.available()) {
+          Wire.read();
+        }
       }
     }
   } else {
-    // It's been a while, treat this as the start of a new packet
-    expectedDataSize = Wire.read();
-    if (expectedDataSize > bufferSize) {
-      expectedDataSize = bufferSize;
+    if (Wire.available()) {
+      // It's been a while, treat this as the start of a new packet
+      expectedDataSize = Wire.read();
+      if (expectedDataSize > bufferSize) {
+        expectedDataSize = bufferSize;
+      }
+      start();
     }
-
-    start();
   }
   lastReceptionTime = now;
 }
 
 boolean I2CReader::checksumValid() {
-  if (readPosition < bufferSize) {
+  if (bytesRead < bufferSize) {
     byte checksum = 0;
-    for (int i = 0; i < readPosition; i++) {
+    for (int i = 0; i < bytesRead - 1; i++) {
       checksum ^= buffer[i];
     }
-    return checksum == getByte();
+    return checksum == buffer[bytesRead - 1];
   } else {
     return false;
   }
