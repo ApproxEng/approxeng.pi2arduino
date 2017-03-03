@@ -3,8 +3,8 @@ import time
 
 p2a.init()
 while 1:
-	for hue in range(0,250,10):
+	for hue in range(0,255,1):
 		print "Sending hue {}".format(hue)
 		send(0x61,1,hue,20)
-		time.sleep(1)
+		time.sleep(0.01)
 
