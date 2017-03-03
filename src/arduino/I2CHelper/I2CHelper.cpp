@@ -64,7 +64,7 @@ void I2CHelper::begin(byte address) {
   // as per note from atmega8 manual pg167
   cbi(PORTC, 4);
   cbi(PORTC, 5);
-#else
+#elif defined(__AVR_ATmega128__)
   // deactivate internal pull-ups for twi
   // as per note from atmega128 manual pg204
   cbi(PORTD, 0);
