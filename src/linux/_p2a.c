@@ -43,6 +43,7 @@ static PyObject *p2a_sendBytes(PyObject *self, PyObject *args) {
     if (!PyArg_ParseTuple(args, "is#", &address, &buffer, &length))
         return NULL;
     sendBytes(address, buffer, length);
+    Py_INCREF(Py_None);
     return Py_None;
 }
 
@@ -67,6 +68,7 @@ static PyObject *p2a_getBytes(PyObject *self, PyObject *args) {
  */
 static PyObject *p2a_init(PyObject *self, PyObject *args) {
     gpioInitialise();
+    Py_INCREF(Py_None);
     return Py_None;
 }
 
@@ -80,6 +82,7 @@ static PyObject *p2a_writeByteData(PyObject *self, PyObject *args) {
     unsigned handle = (unsigned) i2cOpen(1, address, 0);
     i2cWriteByteData(handle, reg, value);
     i2cClose(handle);
+    Py_INCREF(Py_None);
     return Py_None;
 }
 
@@ -94,5 +97,6 @@ static PyObject *p2a_writeBlockData(PyObject *self, PyObject *args) {
     unsigned handle = (unsigned) i2cOpen(1, address, 0);
     i2cWriteBlockData(handle, reg, buffer, length);
     i2cClose(handle);
+    Py_INCREF(Py_None);
     return Py_None;
 }

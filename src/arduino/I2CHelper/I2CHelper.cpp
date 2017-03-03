@@ -161,9 +161,9 @@ float I2CReader::getFloat() {
 
 void I2CReader::receiveByte() {
   long now = millis();
-  if (now - lastReceptionTime < TRANSMIT_DELAY) {
+  if (now - lastReceptionTime < TRANSMIT_DELAY && !newData) {
     // Close in time to the previous data, append to buffer
-    if (bytesRead < expectedDataSize && Wire.available()) {
+    if (bytesRead < expectedDataSize && Wire.available() && bytesRead < bufferSize) {
       buffer[bytesRead++] = Wire.read();
       if (bytesRead == expectedDataSize) {
         newData = true;
@@ -201,6 +201,7 @@ boolean I2CReader::checksumValid() {
 boolean I2CReader::hasNewData() {
   if (newData) {
     newData = false;
+    _bytesReceived = 0;
     return true;
   }
   return false;
