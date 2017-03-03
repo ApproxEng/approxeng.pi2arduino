@@ -22,20 +22,17 @@ volatile int _bytesReceived = 0;
 volatile boolean _messageHandled = false;
 volatile boolean _bytesProcessing = false;
 
+byte RECEIVE_BUFFER[RECEIVE_BUFFER_SIZE];
+
 void _i2cReceiveCallback(int bytesRead) {
+  int bytes = Wire.available();
   _bytesProcessing = true;
   _messageHandled = true;
-  _bytesReceived += bytesRead;
-  switch (bytesRead) {
-    case 0:
-      // Bus probe
-      break;
-    default:
-      // Data from Pi, use it!
-      while (Wire.available()) {
-        I2CHelper::reader.receiveByte();
-      }
-      break;
+  _bytesReceived += bytes;
+  Wire.readBytes(RECEIVE_BUFFER, bytes);
+  int i = 0;
+  for (i = 0; i < bytes; i++) {
+    I2CHelper::reader.receiveByte(RECEIVE_BUFFER[i]);
   }
   _bytesProcessing = false;
 }
@@ -159,29 +156,24 @@ float I2CReader::getFloat() {
   return fu.f;
 }
 
-void I2CReader::receiveByte() {
+void I2CReader::receiveByte(byte b) {
   long now = millis();
   if (now - lastReceptionTime < TRANSMIT_DELAY && !newData) {
     // Close in time to the previous data, append to buffer
-    if (bytesRead < expectedDataSize && Wire.available() && bytesRead < bufferSize) {
-      buffer[bytesRead++] = Wire.read();
+    if (bytesRead < expectedDataSize && bytesRead < bufferSize) {
+      buffer[bytesRead++] = b;
       if (bytesRead == expectedDataSize) {
         newData = true;
         readPosition = 0;
-        while (Wire.available()) {
-          Wire.read();
-        }
       }
     }
   } else {
-    if (Wire.available()) {
-      // It's been a while, treat this as the start of a new packet
-      expectedDataSize = Wire.read();
-      if (expectedDataSize > bufferSize) {
-        expectedDataSize = bufferSize;
-      }
-      start();
+    // It's been a while, treat this as the start of a new packet
+    expectedDataSize = b;
+    if (expectedDataSize > bufferSize) {
+      expectedDataSize = bufferSize;
     }
+    start();
   }
   lastReceptionTime = now;
 }
