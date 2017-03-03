@@ -1,18 +1,12 @@
 import struct
-
 import approxeng.pi2arduino._p2a
 
+def send(address, *sequence):
+        packed = "";
+        for item in sequence:
+                if isinstance(item, int) and item <= 255 and item >= 0:
+                        packed+=struct.pack("B", item);
+                elif isinstance(item, float):
+                        packed+=struct.pack("f", item);
+        _p2a.sendBytes(address, packed);
 
-def send(address, *args):
-    bytes = []
-    for arg in args:
-        if isinstance(arg, int):
-            if arg < 0 | arg > 255:
-                raise ValueError('Integer values must be between 0 and 255!')
-            else:
-                bytes.append(chr(arg))
-        elif isinstance(arg, float):
-            for c in struct.pack('f', arg):
-                bytes.append(c)
-    print ''.join(bytes)
-    approxeng.pi2arduino._p2a.sendBytes(address, ''.join(bytes))
