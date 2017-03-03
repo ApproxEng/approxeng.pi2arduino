@@ -3,4 +3,6 @@
 
 void sendBytes(unsigned address, char *buffer, unsigned length);
 
+void sendByteWithRetry(unsigned handle, unsigned byte);
+
 void getBytes(unsigned address, char *buffer, unsigned length);
