@@ -35,7 +35,7 @@ void _i2cRequestCallback() {
   if (I2CHelper::user_onRequest) {
     I2CHelper::responder.start();
     I2CHelper::user_onRequest();
-  }  
+  }
 }
 
 void I2CHelper::begin(byte address) {
@@ -53,9 +53,10 @@ void I2CHelper::begin(byte address) {
   cbi(PORTD, 0);
   cbi(PORTD, 1);
 #endif
+  Serial.println("Waiting for I2C...");
 }
 
-void I2CHelper::onRequest(void (*function)(void) ) {
+void I2CHelper::onRequest(void (*function)(void)) {
   I2CHelper::user_onRequest = function;
 }
 
@@ -66,7 +67,7 @@ volatile union floatUnion {
   byte fBuff[sizeof(float)];
 } fu;
 
-I2CResponder::I2CResponder(byte* b, int bs) {
+I2CResponder::I2CResponder(byte *b, int bs) {
   buffer = b;
   bufferSize = bs;
   writePosition = 0;
@@ -101,14 +102,16 @@ int I2CResponder::write(boolean addChecksum) {
     addByte(checksum);
   }
   if (dataValid) {
-    int sentBytes = Wire.write(buffer, writePosition);
-  }
-  else {
+    int bytesSent = -1;
+    while (bytesSent != writePosition) {
+      bytesSent = Wire.write(buffer, writePosition);
+    }
+  } else {
     return -1;
   }
 }
 
-I2CReader::I2CReader(byte* b, int bs) {
+I2CReader::I2CReader(byte *b, int bs) {
   buffer = b;
   bufferSize = bs;
   readPosition = 0;
@@ -116,6 +119,8 @@ I2CReader::I2CReader(byte* b, int bs) {
 }
 
 void I2CReader::start() {
+  bytesRead = 0;
+  newData = false;
   readPosition = 0;
 }
 
@@ -139,7 +144,8 @@ void I2CReader::receiveByte() {
   if (now - lastReceptionTime < TRANSMIT_DELAY) {
     // Close in time to the previous data, append to buffer
     if (bytesRead < expectedDataSize) {
-      buffer[bytesRead++] = Wire.read();
+      byte data = Wire.read();
+      buffer[bytesRead++] = data;
       if (bytesRead == expectedDataSize) {
         newData = true;
       }
@@ -150,8 +156,7 @@ void I2CReader::receiveByte() {
     if (expectedDataSize > bufferSize) {
       expectedDataSize = bufferSize;
     }
-    bytesRead = 0;
-    newData = false;
+
     start();
   }
   lastReceptionTime = now;
@@ -178,6 +183,11 @@ boolean I2CReader::hasNewData() {
 }
 
 void I2CReader::printBuffer() {
+  Serial.print(F("bytesRead="));
+  Serial.print(bytesRead, DEC);
+  Serial.print(F(", readPos="));
+  Serial.print(readPosition);
+  Serial.print(F(", data="));
   for (int i = 0; i < bufferSize - 1; i++) {
     Serial.print(buffer[i], DEC);
     Serial.print(F(", "));

@@ -18,7 +18,7 @@
 
 // Delay in milliseconds beyond which we assume we have a new
 // packet of data.
-#define TRANSMIT_DELAY 10
+#define TRANSMIT_DELAY 20
 
 // Size of the receive buffer
 #define RECEIVE_BUFFER_SIZE 32
@@ -71,7 +71,7 @@ class I2CHelper {
     static I2CReader reader;
     static I2CResponder responder;
     static void onRequest(void(*)(void));
-    static void (*user_onRequest)(void);    
+    static void (*user_onRequest)(void);
 };
 
 #endif
