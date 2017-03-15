@@ -70,7 +70,7 @@ void I2CHelper::begin(byte address) {
   cbi(PORTD, 0);
   cbi(PORTD, 1);
 #endif
-  Serial.println("Waiting for I2C...");
+  //Serial.println("Waiting for I2C...");
 }
 
 void I2CHelper::onRequest(void (*function)(void)) {
