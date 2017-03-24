@@ -18,7 +18,7 @@
 
 // Delay in milliseconds beyond which we assume we have a new
 // packet of data.
-#define TRANSMIT_DELAY 20
+#define TRANSMIT_DELAY 2
 
 // Size of the receive buffer
 #define RECEIVE_BUFFER_SIZE 32
@@ -49,7 +49,7 @@ class I2CReader {
     float getFloat();
     byte getByte();
     boolean checksumValid();
-    void receiveByte();
+    void receiveByte(byte b);
     boolean hasNewData();
     void printBuffer();
     I2CReader(byte* buffer, int bufferSize);
