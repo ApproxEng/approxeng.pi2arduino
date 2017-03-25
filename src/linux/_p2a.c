@@ -29,7 +29,7 @@ static PyMethodDef module_methods[] = {
 };
 
 PyMODINIT_FUNC initp2a(void) {
-    PyObject *m = Py_InitModule3("_p2a", module_methods, module_docstring);
+    PyObject *m = Py_InitModule3("p2a", module_methods, module_docstring);
     if (m == NULL)
         return;
 }
