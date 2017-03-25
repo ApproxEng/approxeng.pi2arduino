@@ -1,6 +1,6 @@
 from setuptools import setup, Extension, find_packages
 
-extension_mod = Extension("approxeng.pi2arduino.p2a",
+extension_mod = Extension("approxeng.pi2arduino._p2a",
                           sources=["linux/_p2a.c",
                                    "linux/p2a.c",
                                    "linux/pigpio.c",

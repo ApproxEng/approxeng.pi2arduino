@@ -1,7 +1,7 @@
 import struct
 
 # noinspection PyUnresolvedReferences
-import approxeng.pi2arduino.p2a as p2a_native
+import approxeng.pi2arduino._p2a as p2a_native
 
 
 def send(address, *sequence):
