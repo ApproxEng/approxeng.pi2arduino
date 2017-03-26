@@ -24,4 +24,4 @@ class I2CHelper(object):
             elif token == 'f':
                 length += 4
         data = approxeng.pi2arduino._p2a.getBytes(address, length)
-        print data
+        return data
